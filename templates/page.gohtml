@@ -5,5 +5,8 @@
 <title></title>
 </head>
 <body>
+  {{range .Children}}
+    {{renderComponent .}}
+  {{end}}
 </body>
 </html>
