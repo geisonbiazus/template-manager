@@ -1,13 +1,15 @@
 package templatemanager
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type RenderTemplatePresenter interface {
 	PresentHTML(html string)
 }
 
 type Renderer interface {
-	Render(Component) string
+	Render(*Component) string
 }
 
 type RenderTemplateInteractor struct {
@@ -28,8 +30,8 @@ func (r *RenderTemplateInteractor) RenderByJSON(
 	presenter.PresentHTML(r.Renderer.Render(component))
 }
 
-func (r *RenderTemplateInteractor) parseJSON(templateJSON string) Component {
-	component := Component{}
-	json.Unmarshal([]byte(templateJSON), &component)
+func (r *RenderTemplateInteractor) parseJSON(templateJSON string) *Component {
+	component := &Component{}
+	json.Unmarshal([]byte(templateJSON), component)
 	return component
 }

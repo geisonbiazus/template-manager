@@ -20,14 +20,14 @@ func TestTemplateRenderer(t *testing.T) {
 	})
 }
 
-var singleComponent = Component{Type: "Page"}
-var nestedComponents = Component{
+var singleComponent = &Component{Type: "Page"}
+var nestedComponents = &Component{
 	Type: "Page",
-	Children: []Component{
-		Component{
+	Children: []*Component{
+		&Component{
 			Type: "Section",
-			Children: []Component{
-				Component{Type: "Text"},
+			Children: []*Component{
+				&Component{Type: "Text"},
 			},
 		},
 	},

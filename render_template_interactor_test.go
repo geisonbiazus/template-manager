@@ -51,7 +51,7 @@ func (p *TemplatePresenterSpy) PresentHTML(html string) {
 }
 
 type RendererSpy struct {
-	Component Component
+	Component *Component
 	HTML      string
 }
 
@@ -63,7 +63,7 @@ func (r *RendererSpy) Configure(html string) {
 	r.HTML = html
 }
 
-func (r *RendererSpy) Render(c Component) string {
+func (r *RendererSpy) Render(c *Component) string {
 	r.Component = c
 	return r.HTML
 }
@@ -84,13 +84,13 @@ const validTemplateJSON = `
 }
 `
 
-var validTemplateComponent = Component{
+var validTemplateComponent = &Component{
 	Type: "Page",
-	Children: []Component{
-		Component{
+	Children: []*Component{
+		&Component{
 			Type: "Section",
-			Children: []Component{
-				Component{Type: "Text"},
+			Children: []*Component{
+				&Component{Type: "Text"},
 			},
 		},
 	},

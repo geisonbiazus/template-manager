@@ -13,8 +13,8 @@ func init() {
 }
 
 type Component struct {
-	Type     string      `json:"type"`
-	Children []Component `json:"children"`
+	Type     string       `json:"type"`
+	Children []*Component `json:"children"`
 }
 
 func (c *Component) Render() string {

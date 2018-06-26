@@ -7,6 +7,6 @@ func NewTemplateRenderer() *TemplateRenderer {
 	return &TemplateRenderer{}
 }
 
-func (r *TemplateRenderer) Render(component Component) string {
+func (r *TemplateRenderer) Render(component *Component) string {
 	return component.Render()
 }
