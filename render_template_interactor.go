@@ -6,19 +6,26 @@ type RenderTemplatePresenter interface {
 	PresentHTML(html string)
 }
 
-type RenderTemplateInteractor struct {
-	Presenter RenderTemplatePresenter
+type Renderer interface {
+	Render(Component) string
 }
 
-func NewRenderTemplateInteractor() *RenderTemplateInteractor {
-	return &RenderTemplateInteractor{}
+type RenderTemplateInteractor struct {
+	Presenter RenderTemplatePresenter
+	Renderer  Renderer
+}
+
+func NewRenderTemplateInteractor(renderer Renderer) *RenderTemplateInteractor {
+	return &RenderTemplateInteractor{
+		Renderer: renderer,
+	}
 }
 
 func (r *RenderTemplateInteractor) RenderByJSON(
 	templateJSON string, presenter RenderTemplatePresenter,
 ) {
 	component := r.parseJSON(templateJSON)
-	presenter.PresentHTML(component.Render())
+	presenter.PresentHTML(r.Renderer.Render(component))
 }
 
 func (r *RenderTemplateInteractor) parseJSON(templateJSON string) Component {

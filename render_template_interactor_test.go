@@ -8,31 +8,32 @@ import (
 
 func TestRenderTemplateInteractor(t *testing.T) {
 	type fixture struct {
+		renderer   *RendererSpy
 		interactor *RenderTemplateInteractor
 		presenter  *TemplatePresenterSpy
 	}
 
 	setup := func() *fixture {
+		renderer := NewRendererSpy()
+		interactor := NewRenderTemplateInteractor(renderer)
 		presenter := NewTemplatePresenterSpy()
-		interactor := NewRenderTemplateInteractor()
 
 		return &fixture{
+			renderer:   renderer,
 			interactor: interactor,
 			presenter:  presenter,
 		}
 	}
 
 	t.Run("RenderByJSON", func(t *testing.T) {
-		t.Run("Rendering a simple template", func(t *testing.T) {
+		t.Run("Render and present a valid JSON", func(t *testing.T) {
 			f := setup()
-			f.interactor.RenderByJSON(simplePageJSON, f.presenter)
-			assert.Equal(t, simpleTemplateHTML, f.presenter.HTML)
-		})
+			f.renderer.Configure(renderedHTML)
 
-		t.Run("Rendering a nested template", func(t *testing.T) {
-			f := setup()
-			f.interactor.RenderByJSON(nestedTemplateJSON, f.presenter)
-			assert.Equal(t, nestedTemplateHTML, f.presenter.HTML)
+			f.interactor.RenderByJSON(validTemplateJSON, f.presenter)
+
+			assert.DeepEqual(t, validTemplateComponent, f.renderer.Component)
+			assert.Equal(t, renderedHTML, f.presenter.HTML)
 		})
 	})
 }
@@ -49,13 +50,25 @@ func (p *TemplatePresenterSpy) PresentHTML(html string) {
 	p.HTML = html
 }
 
-const simplePageJSON = `
-{
-	"type": "Page"
+type RendererSpy struct {
+	Component Component
+	HTML      string
 }
-`
 
-const nestedTemplateJSON = `
+func NewRendererSpy() *RendererSpy {
+	return &RendererSpy{}
+}
+
+func (r *RendererSpy) Configure(html string) {
+	r.HTML = html
+}
+
+func (r *RendererSpy) Render(c Component) string {
+	r.Component = c
+	return r.HTML
+}
+
+const validTemplateJSON = `
 {
 	"type": "Page",
 	"children": [
@@ -71,32 +84,22 @@ const nestedTemplateJSON = `
 }
 `
 
-const simpleTemplateHTML = "<!DOCTYPE html>\n" +
-	"<html>\n" +
-	"<head>\n" +
-	"<meta charset=\"UTF-8\">\n" +
-	"<title></title>\n" +
-	"</head>\n" +
-	"<body>\n" +
-	"  \n" +
-	"</body>\n" +
-	"</html>\n"
+var validTemplateComponent = Component{
+	Type: "Page",
+	Children: []Component{
+		Component{
+			Type: "Section",
+			Children: []Component{
+				Component{Type: "Text"},
+			},
+		},
+	},
+}
 
-const nestedTemplateHTML = "<!DOCTYPE html>\n" +
-	"<html>\n" +
-	"<head>\n" +
-	"<meta charset=\"UTF-8\">\n" +
-	"<title></title>\n" +
-	"</head>\n" +
-	"<body>\n" +
-	"  \n" +
-	"    <section>\n" +
-	"  \n" +
-	"    <p>Text</p>\n" +
-	"\n" +
-	"  \n" +
-	"</section>\n" +
-	"\n" +
-	"  \n" +
-	"</body>\n" +
-	"</html>\n"
+const renderedHTML = `
+<html>
+<body>
+<section>Text</section>
+</body>
+</html>
+`
