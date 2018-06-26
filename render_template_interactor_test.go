@@ -7,19 +7,46 @@ import (
 )
 
 func TestRenderTemplateInteractor(t *testing.T) {
+	type fixture struct {
+		interactor *RenderTemplateInteractor
+		presenter  *TemplatePresenterSpy
+	}
+
+	setup := func() *fixture {
+		presenter := NewTemplatePresenterSpy()
+		interactor := NewRenderTemplateInteractor()
+
+		return &fixture{
+			interactor: interactor,
+			presenter:  presenter,
+		}
+	}
+
 	t.Run("RenderByJSON", func(t *testing.T) {
-		t.Run("Renders simple template", func(t *testing.T) {
-			interactor := NewRenderTemplateInteractor()
-			result := interactor.RenderByJSON(simplePageJSON)
-			assert.Equal(t, simpleTemplateHTML, result)
+		t.Run("Rendering a simple template", func(t *testing.T) {
+			f := setup()
+			f.interactor.RenderByJSON(simplePageJSON, f.presenter)
+			assert.Equal(t, simpleTemplateHTML, f.presenter.HTML)
 		})
 
-		t.Run("Renders a nested template", func(t *testing.T) {
-			interactor := NewRenderTemplateInteractor()
-			result := interactor.RenderByJSON(nestedTemplateJSON)
-			assert.Equal(t, nestedTemplateHTML, result)
+		t.Run("Rendering a nested template", func(t *testing.T) {
+			f := setup()
+			f.interactor.RenderByJSON(nestedTemplateJSON, f.presenter)
+			assert.Equal(t, nestedTemplateHTML, f.presenter.HTML)
 		})
 	})
+}
+
+type TemplatePresenterSpy struct {
+	HTML string
+}
+
+func NewTemplatePresenterSpy() *TemplatePresenterSpy {
+	return &TemplatePresenterSpy{}
+}
+
+func (p *TemplatePresenterSpy) PresentHTML(html string) {
+	p.HTML = html
 }
 
 const simplePageJSON = `

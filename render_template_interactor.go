@@ -1,45 +1,28 @@
 package templatemanager
 
-import (
-	"bytes"
-	"encoding/json"
-	"strings"
-	"text/template"
-)
+import "encoding/json"
+
+type RenderTemplatePresenter interface {
+	PresentHTML(html string)
+}
 
 type RenderTemplateInteractor struct {
+	Presenter RenderTemplatePresenter
 }
 
 func NewRenderTemplateInteractor() *RenderTemplateInteractor {
 	return &RenderTemplateInteractor{}
 }
 
-var fm = template.FuncMap{
-	"renderComponent": renderComponent,
+func (r *RenderTemplateInteractor) RenderByJSON(
+	templateJSON string, presenter RenderTemplatePresenter,
+) {
+	component := r.parseJSON(templateJSON)
+	presenter.PresentHTML(component.Render())
 }
 
-var tmpl *template.Template
-
-func init() {
-	tmpl = template.Must(template.New("").Funcs(fm).ParseGlob("templates/*"))
-}
-
-func (r *RenderTemplateInteractor) RenderByJSON(templateJSON string) string {
+func (r *RenderTemplateInteractor) parseJSON(templateJSON string) Component {
 	component := Component{}
 	json.Unmarshal([]byte(templateJSON), &component)
-
-	return renderComponent(component)
-}
-
-func renderComponent(c Component) string {
-	buffer := &bytes.Buffer{}
-
-	tmpl.ExecuteTemplate(buffer, strings.ToLower(c.Type)+".gohtml", c)
-
-	return buffer.String()
-}
-
-type Component struct {
-	Type     string      `json:"type"`
-	Children []Component `json:"children"`
+	return component
 }
