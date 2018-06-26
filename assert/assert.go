@@ -18,3 +18,8 @@ func DeepEqual(t *testing.T, expected, actual interface{}) {
 		t.Errorf("\nExpected: %v\n  Actual: %v", expected, actual)
 	}
 }
+
+func False(t *testing.T, value bool) {
+	t.Helper()
+	Equal(t, false, value)
+}

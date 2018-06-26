@@ -35,38 +35,36 @@ func TestRenderTemplateInteractor(t *testing.T) {
 			assert.DeepEqual(t, validTemplateComponent, f.renderer.Component)
 			assert.Equal(t, renderedHTML, f.presenter.HTML)
 		})
+
+		t.Run("With invalid json present a validation error", func(t *testing.T) {
+			f := setup()
+			f.interactor.RenderByJSON(invalidJSON, f.presenter)
+			assertInvalidJSONResonse(t, f.presenter)
+		})
+
+		t.Run("With empty json present a validation error", func(t *testing.T) {
+			f := setup()
+			f.interactor.RenderByJSON(emptyJSON, f.presenter)
+			assertInvalidJSONResonse(t, f.presenter)
+		})
 	})
 }
 
-type TemplatePresenterSpy struct {
-	HTML string
+func assertInvalidJSONResonse(t *testing.T, p *TemplatePresenterSpy) {
+	errors := []ValidationError{
+		ValidationError{
+			Field:   "template_json",
+			Type:    ErrorInvalid,
+			Message: "The given template JSON is invalid",
+		},
+	}
+
+	assert.DeepEqual(t, errors, p.ValidationErrors)
+	assert.False(t, p.PresentHTMLCalled)
 }
 
-func NewTemplatePresenterSpy() *TemplatePresenterSpy {
-	return &TemplatePresenterSpy{}
-}
-
-func (p *TemplatePresenterSpy) PresentHTML(html string) {
-	p.HTML = html
-}
-
-type RendererSpy struct {
-	Component *Component
-	HTML      string
-}
-
-func NewRendererSpy() *RendererSpy {
-	return &RendererSpy{}
-}
-
-func (r *RendererSpy) Configure(html string) {
-	r.HTML = html
-}
-
-func (r *RendererSpy) Render(c *Component) string {
-	r.Component = c
-	return r.HTML
-}
+const invalidJSON = `INVALID JSON`
+const emptyJSON = `{}`
 
 const validTemplateJSON = `
 {
@@ -103,3 +101,40 @@ const renderedHTML = `
 </body>
 </html>
 `
+
+type TemplatePresenterSpy struct {
+	PresentHTMLCalled bool
+	HTML              string
+	ValidationErrors  []ValidationError
+}
+
+func NewTemplatePresenterSpy() *TemplatePresenterSpy {
+	return &TemplatePresenterSpy{}
+}
+
+func (p *TemplatePresenterSpy) PresentHTML(html string) {
+	p.PresentHTMLCalled = true
+	p.HTML = html
+}
+
+func (p *TemplatePresenterSpy) PresentValidationErrors(ee []ValidationError) {
+	p.ValidationErrors = ee
+}
+
+type RendererSpy struct {
+	Component *Component
+	HTML      string
+}
+
+func NewRendererSpy() *RendererSpy {
+	return &RendererSpy{}
+}
+
+func (r *RendererSpy) Configure(html string) {
+	r.HTML = html
+}
+
+func (r *RendererSpy) Render(c *Component) string {
+	r.Component = c
+	return r.HTML
+}

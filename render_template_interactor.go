@@ -6,10 +6,17 @@ import (
 
 type RenderTemplatePresenter interface {
 	PresentHTML(html string)
+	PresentValidationErrors([]ValidationError)
 }
 
 type Renderer interface {
 	Render(*Component) string
+}
+
+var invalidTemplateJSONValidationError = ValidationError{
+	Field:   "template_json",
+	Type:    ErrorInvalid,
+	Message: "The given template JSON is invalid",
 }
 
 type RenderTemplateInteractor struct {
@@ -27,11 +34,20 @@ func (r *RenderTemplateInteractor) RenderByJSON(
 	templateJSON string, presenter RenderTemplatePresenter,
 ) {
 	component := r.parseJSON(templateJSON)
+
+	if component == nil {
+		presenter.PresentValidationErrors([]ValidationError{invalidTemplateJSONValidationError})
+		return
+	}
+
 	presenter.PresentHTML(r.Renderer.Render(component))
 }
 
 func (r *RenderTemplateInteractor) parseJSON(templateJSON string) *Component {
 	component := &Component{}
-	json.Unmarshal([]byte(templateJSON), component)
+	err := json.Unmarshal([]byte(templateJSON), component)
+	if err != nil || component.Empty() {
+		return nil
+	}
 	return component
 }
