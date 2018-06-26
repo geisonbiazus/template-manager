@@ -74,7 +74,10 @@ const validTemplateJSON = `
 			"type": "Section",
 			"children": [
 				{
-					"type": "Text"
+					"type": "Text",
+					"properties": {
+						"content": "<p>Text</p>"
+					}
 				}
 			]
 		}
@@ -88,7 +91,12 @@ var validTemplateComponent = &Component{
 		&Component{
 			Type: "Section",
 			Children: []*Component{
-				&Component{Type: "Text"},
+				&Component{
+					Type: "Text",
+					Properties: Properties{
+						"content": "<p>Text</p>",
+					},
+				},
 			},
 		},
 	},

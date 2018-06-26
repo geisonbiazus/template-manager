@@ -1,8 +1,11 @@
 package templatemanager
 
+type Properties map[string]string
+
 type Component struct {
-	Type     string       `json:"type"`
-	Children []*Component `json:"children"`
+	Type       string       `json:"type"`
+	Children   []*Component `json:"children"`
+	Properties Properties   `json:"properties"`
 }
 
 func (c *Component) Empty() bool {
