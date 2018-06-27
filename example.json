@@ -1,0 +1,28 @@
+{
+  "type": "Page",
+  "children": [
+    {
+      "type": "Section",
+      "children": [
+        {
+          "type": "Text",
+          "properties": {
+            "content": "<h1>Title</h1>"
+          }
+        },
+        {
+          "type": "Text",
+          "properties": {
+            "content": "<h2>Subtitle</h2>"
+          }
+        },
+        {
+          "type": "Text",
+          "properties": {
+            "content": "<p>Some text here</p>"
+          }
+        }
+      ]
+    }    
+  ]
+}
