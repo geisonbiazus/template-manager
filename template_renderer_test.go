@@ -12,7 +12,7 @@ func TestTemplateRenderer(t *testing.T) {
 	}
 
 	setup := func() *fixture {
-		path := "templates/test/*"
+		path := "test/templates/*"
 		renderer := NewTemplateRenderer(path)
 		return &fixture{
 			renderer: renderer,
