@@ -3,7 +3,7 @@ package templatemanager
 import (
 	"testing"
 
-	"github.com/geisonbiazus/addrvrf/assert"
+	"github.com/geisonbiazus/templatemanager/assert"
 )
 
 func TestTemplateRenderer(t *testing.T) {
