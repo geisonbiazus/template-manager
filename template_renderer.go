@@ -10,12 +10,9 @@ type TemplateRenderer struct {
 	tmpl *template.Template
 }
 
-func init() {
-}
-
-func NewTemplateRenderer() *TemplateRenderer {
+func NewTemplateRenderer(templatesPath string) *TemplateRenderer {
 	r := &TemplateRenderer{}
-	r.loadTemplates()
+	r.loadTemplates(templatesPath)
 	return r
 }
 
@@ -25,9 +22,9 @@ func (r *TemplateRenderer) Render(c *Component) string {
 	return buffer.String()
 }
 
-func (r *TemplateRenderer) loadTemplates() {
+func (r *TemplateRenderer) loadTemplates(templatesPath string) {
 	r.tmpl = template.Must(
-		template.New("").Funcs(r.funcMap()).ParseGlob("templates/*"),
+		template.New("").Funcs(r.funcMap()).ParseGlob(templatesPath),
 	)
 }
 

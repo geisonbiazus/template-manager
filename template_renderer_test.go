@@ -7,15 +7,27 @@ import (
 )
 
 func TestTemplateRenderer(t *testing.T) {
+	type fixture struct {
+		renderer *TemplateRenderer
+	}
+
+	setup := func() *fixture {
+		path := "templates/test/*"
+		renderer := NewTemplateRenderer(path)
+		return &fixture{
+			renderer: renderer,
+		}
+	}
+
 	t.Run("Rendering a simple template", func(t *testing.T) {
-		renderer := NewTemplateRenderer()
-		result := renderer.Render(singleComponent)
+		f := setup()
+		result := f.renderer.Render(singleComponent)
 		assert.Equal(t, simpleTemplateHTML, result)
 	})
 
 	t.Run("Rendering a nested template", func(t *testing.T) {
-		renderer := NewTemplateRenderer()
-		result := renderer.Render(nestedComponents)
+		f := setup()
+		result := f.renderer.Render(nestedComponents)
 		assert.Equal(t, nestedTemplateHTML, result)
 	})
 }
