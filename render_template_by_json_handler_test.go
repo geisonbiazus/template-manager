@@ -11,23 +11,27 @@ import (
 
 func TestRenderTemplateByJSONHandler(t *testing.T) {
 	type fixture struct {
-		handler    *RenderTemplateByJSONHandler
-		recorder   *httptest.ResponseRecorder
-		interactor *RendererInteractorSpy
-		presenter  *HTTPRenderTemplatePresenterSpy
+		handler          *RenderTemplateByJSONHandler
+		recorder         *httptest.ResponseRecorder
+		interactor       *RendererInteractorSpy
+		presenterFactory *HTTPRenderTemplatePresenterFactorySpy
+		presenter        *RenderTemplatePresenterSpy
 	}
 
 	setup := func() *fixture {
 		recorder := httptest.NewRecorder()
 		interactor := NewRendererInteractorSpy()
-		presenter := NewHTTPRenderTemplatePresenterSpy()
-		handler := NewRenderTemplateByJSONHandler(interactor, presenter)
+		presenter := NewRenderTemplatePresenterSpy()
+		presenterFactory := NewHTTPRenderTemplatePresenterFactorySpy()
+		presenterFactory.Configure(presenter)
+		handler := NewRenderTemplateByJSONHandler(interactor, presenterFactory)
 
 		return &fixture{
-			handler:    handler,
-			recorder:   recorder,
-			interactor: interactor,
-			presenter:  presenter,
+			handler:          handler,
+			recorder:         recorder,
+			interactor:       interactor,
+			presenterFactory: presenterFactory,
+			presenter:        presenter,
 		}
 	}
 
@@ -36,10 +40,12 @@ func TestRenderTemplateByJSONHandler(t *testing.T) {
 	t.Run("template JSON goes through interactor", func(t *testing.T) {
 		f := setup()
 		r := httptest.NewRequest(http.MethodPost, "http://example.org", bytes.NewBufferString(validRequestBody))
+
 		f.handler.ServeHTTP(f.recorder, r)
+
 		assert.DeepEqual(t, &Component{Type: "Page"}, f.interactor.Template)
 		assert.Equal(t, f.presenter, f.interactor.Presenter)
-		assert.Equal(t, f.presenter.ResponseWriter, f.recorder)
+		assert.Equal(t, f.presenterFactory.ResponseWriter, f.recorder)
 	})
 }
 
@@ -59,18 +65,20 @@ func (r *RendererInteractorSpy) RenderByJSON(
 	r.Presenter = presenter
 }
 
-type HTTPRenderTemplatePresenterSpy struct {
+type HTTPRenderTemplatePresenterFactorySpy struct {
 	ResponseWriter http.ResponseWriter
+	Presenter      *RenderTemplatePresenterSpy
 }
 
-func NewHTTPRenderTemplatePresenterSpy() *HTTPRenderTemplatePresenterSpy {
-	return &HTTPRenderTemplatePresenterSpy{}
+func NewHTTPRenderTemplatePresenterFactorySpy() *HTTPRenderTemplatePresenterFactorySpy {
+	return &HTTPRenderTemplatePresenterFactorySpy{}
 }
 
-func (p *HTTPRenderTemplatePresenterSpy) With(w http.ResponseWriter) HTTPRenderTemplatePresenter {
-	p.ResponseWriter = w
-	return p
+func (f *HTTPRenderTemplatePresenterFactorySpy) Create(w http.ResponseWriter) RenderTemplatePresenter {
+	f.ResponseWriter = w
+	return f.Presenter
 }
 
-func (p *HTTPRenderTemplatePresenterSpy) PresentHTML(html string)                      {}
-func (p *HTTPRenderTemplatePresenterSpy) PresentValidationErrors(ee []ValidationError) {}
+func (f *HTTPRenderTemplatePresenterFactorySpy) Configure(p *RenderTemplatePresenterSpy) {
+	f.Presenter = p
+}
