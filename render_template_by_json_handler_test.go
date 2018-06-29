@@ -13,16 +13,16 @@ func TestRenderTemplateByJSONHandler(t *testing.T) {
 	type fixture struct {
 		handler          *RenderTemplateByJSONHandler
 		recorder         *httptest.ResponseRecorder
-		interactor       *RendererInteractorSpy
-		presenterFactory *HTTPRenderTemplatePresenterFactorySpy
-		presenter        *RenderTemplatePresenterSpy
+		interactor       *RenderTemplateInputBoundarySpy
+		presenterFactory *RenderTemplateOutputBoundaryFactorySpy
+		presenter        *RenderTemplateOutputBoundarySpy
 	}
 
 	setup := func() *fixture {
 		recorder := httptest.NewRecorder()
-		interactor := NewRendererInteractorSpy()
-		presenter := NewRenderTemplatePresenterSpy()
-		presenterFactory := NewHTTPRenderTemplatePresenterFactorySpy()
+		interactor := NewRenderTemplateInputBoundarySpy()
+		presenter := NewRenderTemplateOutputBoundarySpy()
+		presenterFactory := NewRenderTemplateOutputBoundaryFactorySpy()
 		presenterFactory.Configure(presenter)
 		handler := NewRenderTemplateByJSONHandler(interactor, presenterFactory)
 
@@ -49,36 +49,36 @@ func TestRenderTemplateByJSONHandler(t *testing.T) {
 	})
 }
 
-type RendererInteractorSpy struct {
+type RenderTemplateInputBoundarySpy struct {
 	Template  *Component
-	Presenter RenderTemplatePresenter
+	Presenter RenderTemplateOutputBoundary
 }
 
-func NewRendererInteractorSpy() *RendererInteractorSpy {
-	return &RendererInteractorSpy{}
+func NewRenderTemplateInputBoundarySpy() *RenderTemplateInputBoundarySpy {
+	return &RenderTemplateInputBoundarySpy{}
 }
 
-func (r *RendererInteractorSpy) RenderByJSON(
-	template *Component, presenter RenderTemplatePresenter,
+func (r *RenderTemplateInputBoundarySpy) RenderByJSON(
+	template *Component, presenter RenderTemplateOutputBoundary,
 ) {
 	r.Template = template
 	r.Presenter = presenter
 }
 
-type HTTPRenderTemplatePresenterFactorySpy struct {
+type RenderTemplateOutputBoundaryFactorySpy struct {
 	ResponseWriter http.ResponseWriter
-	Presenter      *RenderTemplatePresenterSpy
+	Presenter      *RenderTemplateOutputBoundarySpy
 }
 
-func NewHTTPRenderTemplatePresenterFactorySpy() *HTTPRenderTemplatePresenterFactorySpy {
-	return &HTTPRenderTemplatePresenterFactorySpy{}
+func NewRenderTemplateOutputBoundaryFactorySpy() *RenderTemplateOutputBoundaryFactorySpy {
+	return &RenderTemplateOutputBoundaryFactorySpy{}
 }
 
-func (f *HTTPRenderTemplatePresenterFactorySpy) Create(w http.ResponseWriter) RenderTemplatePresenter {
+func (f *RenderTemplateOutputBoundaryFactorySpy) Create(w http.ResponseWriter) RenderTemplateOutputBoundary {
 	f.ResponseWriter = w
 	return f.Presenter
 }
 
-func (f *HTTPRenderTemplatePresenterFactorySpy) Configure(p *RenderTemplatePresenterSpy) {
+func (f *RenderTemplateOutputBoundaryFactorySpy) Configure(p *RenderTemplateOutputBoundarySpy) {
 	f.Presenter = p
 }

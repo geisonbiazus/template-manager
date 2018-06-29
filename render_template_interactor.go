@@ -1,10 +1,5 @@
 package templatemanager
 
-type RenderTemplatePresenter interface {
-	PresentHTML(html string)
-	PresentValidationErrors([]ValidationError)
-}
-
 type Renderer interface {
 	Render(*Component) string
 }
@@ -16,7 +11,7 @@ var invalidTemplateJSONValidationError = ValidationError{
 }
 
 type RenderTemplateInteractor struct {
-	Presenter RenderTemplatePresenter
+	Presenter RenderTemplateOutputBoundary
 	Renderer  Renderer
 }
 
@@ -27,7 +22,7 @@ func NewRenderTemplateInteractor(renderer Renderer) *RenderTemplateInteractor {
 }
 
 func (r *RenderTemplateInteractor) RenderByJSON(
-	template *Component, presenter RenderTemplatePresenter,
+	template *Component, presenter RenderTemplateOutputBoundary,
 ) {
 	if template == nil || template.Empty() {
 		presenter.PresentValidationErrors([]ValidationError{invalidTemplateJSONValidationError})

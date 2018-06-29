@@ -5,26 +5,22 @@ import (
 	"net/http"
 )
 
-type HTTPRenderTemplatePresenterFactory interface {
-	Create(w http.ResponseWriter) RenderTemplatePresenter
-}
-
-type RendererInteractor interface {
-	RenderByJSON(template *Component, presenter RenderTemplatePresenter)
+type RenderTemplateOutputBoundaryFactory interface {
+	Create(w http.ResponseWriter) RenderTemplateOutputBoundary
 }
 
 type RenderTemplateByJSONHandler struct {
-	Interactor RendererInteractor
-	Presenter  HTTPRenderTemplatePresenterFactory
+	Interactor       RenderTemplateInputBoundary
+	PresenterFactory RenderTemplateOutputBoundaryFactory
 }
 
 func NewRenderTemplateByJSONHandler(
-	interactor RendererInteractor,
-	presenter HTTPRenderTemplatePresenterFactory,
+	interactor RenderTemplateInputBoundary,
+	presenterFactory RenderTemplateOutputBoundaryFactory,
 ) *RenderTemplateByJSONHandler {
 	return &RenderTemplateByJSONHandler{
-		Interactor: interactor,
-		Presenter:  presenter,
+		Interactor:       interactor,
+		PresenterFactory: presenterFactory,
 	}
 }
 
@@ -32,7 +28,7 @@ func (h *RenderTemplateByJSONHandler) ServeHTTP(w http.ResponseWriter, r *http.R
 	req := renderTemplateByJSONRequest{}
 	json.NewDecoder(r.Body).Decode(&req)
 
-	h.Interactor.RenderByJSON(req.Template, h.Presenter.Create(w))
+	h.Interactor.RenderByJSON(req.Template, h.PresenterFactory.Create(w))
 }
 
 type renderTemplateByJSONRequest struct {

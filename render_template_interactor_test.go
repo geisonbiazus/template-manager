@@ -10,13 +10,13 @@ func TestRenderTemplateInteractor(t *testing.T) {
 	type fixture struct {
 		renderer   *RendererSpy
 		interactor *RenderTemplateInteractor
-		presenter  *RenderTemplatePresenterSpy
+		presenter  *RenderTemplateOutputBoundarySpy
 	}
 
 	setup := func() *fixture {
 		renderer := NewRendererSpy()
 		interactor := NewRenderTemplateInteractor(renderer)
-		presenter := NewRenderTemplatePresenterSpy()
+		presenter := NewRenderTemplateOutputBoundarySpy()
 
 		return &fixture{
 			renderer:   renderer,
@@ -52,7 +52,7 @@ func TestRenderTemplateInteractor(t *testing.T) {
 	})
 }
 
-func assertInvalidJSONResonse(t *testing.T, p *RenderTemplatePresenterSpy) {
+func assertInvalidJSONResonse(t *testing.T, p *RenderTemplateOutputBoundarySpy) {
 	t.Helper()
 	errors := []ValidationError{
 		ValidationError{
@@ -74,22 +74,22 @@ const renderedHTML = `
 </html>
 `
 
-type RenderTemplatePresenterSpy struct {
+type RenderTemplateOutputBoundarySpy struct {
 	PresentHTMLCalled bool
 	HTML              string
 	ValidationErrors  []ValidationError
 }
 
-func NewRenderTemplatePresenterSpy() *RenderTemplatePresenterSpy {
-	return &RenderTemplatePresenterSpy{}
+func NewRenderTemplateOutputBoundarySpy() *RenderTemplateOutputBoundarySpy {
+	return &RenderTemplateOutputBoundarySpy{}
 }
 
-func (p *RenderTemplatePresenterSpy) PresentHTML(html string) {
+func (p *RenderTemplateOutputBoundarySpy) PresentHTML(html string) {
 	p.PresentHTMLCalled = true
 	p.HTML = html
 }
 
-func (p *RenderTemplatePresenterSpy) PresentValidationErrors(ee []ValidationError) {
+func (p *RenderTemplateOutputBoundarySpy) PresentValidationErrors(ee []ValidationError) {
 	p.ValidationErrors = ee
 }
 
