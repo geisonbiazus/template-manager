@@ -1,9 +1,5 @@
 package templatemanager
 
-import (
-	"encoding/json"
-)
-
 type RenderTemplatePresenter interface {
 	PresentHTML(html string)
 	PresentValidationErrors([]ValidationError)
@@ -31,23 +27,12 @@ func NewRenderTemplateInteractor(renderer Renderer) *RenderTemplateInteractor {
 }
 
 func (r *RenderTemplateInteractor) RenderByJSON(
-	templateJSON string, presenter RenderTemplatePresenter,
+	template *Component, presenter RenderTemplatePresenter,
 ) {
-	component := r.parseJSON(templateJSON)
-
-	if component == nil {
+	if template == nil || template.Empty() {
 		presenter.PresentValidationErrors([]ValidationError{invalidTemplateJSONValidationError})
 		return
 	}
 
-	presenter.PresentHTML(r.Renderer.Render(component))
-}
-
-func (r *RenderTemplateInteractor) parseJSON(templateJSON string) *Component {
-	component := &Component{}
-	err := json.Unmarshal([]byte(templateJSON), component)
-	if err != nil || component.Empty() {
-		return nil
-	}
-	return component
+	presenter.PresentHTML(r.Renderer.Render(template))
 }

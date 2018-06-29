@@ -26,31 +26,34 @@ func TestRenderTemplateInteractor(t *testing.T) {
 	}
 
 	t.Run("RenderByJSON", func(t *testing.T) {
-		t.Run("Render and present a valid JSON", func(t *testing.T) {
+		t.Run("Render and present a valid Component", func(t *testing.T) {
 			f := setup()
 			f.renderer.Configure(renderedHTML)
 
-			f.interactor.RenderByJSON(validTemplateJSON, f.presenter)
+			template := &Component{Type: "Page"}
 
-			assert.DeepEqual(t, validTemplateComponent, f.renderer.Component)
+			f.interactor.RenderByJSON(template, f.presenter)
+
+			assert.DeepEqual(t, template, f.renderer.Component)
 			assert.Equal(t, renderedHTML, f.presenter.HTML)
 		})
 
-		t.Run("With invalid json present a validation error", func(t *testing.T) {
+		t.Run("Present a validation error with nil template", func(t *testing.T) {
 			f := setup()
-			f.interactor.RenderByJSON(invalidJSON, f.presenter)
+			f.interactor.RenderByJSON(nil, f.presenter)
 			assertInvalidJSONResonse(t, f.presenter)
 		})
 
-		t.Run("With empty json present a validation error", func(t *testing.T) {
+		t.Run("Present a validation error with empty template", func(t *testing.T) {
 			f := setup()
-			f.interactor.RenderByJSON(emptyJSON, f.presenter)
+			f.interactor.RenderByJSON(&Component{}, f.presenter)
 			assertInvalidJSONResonse(t, f.presenter)
 		})
 	})
 }
 
 func assertInvalidJSONResonse(t *testing.T, p *TemplatePresenterSpy) {
+	t.Helper()
 	errors := []ValidationError{
 		ValidationError{
 			Field:   "template_json",
@@ -61,45 +64,6 @@ func assertInvalidJSONResonse(t *testing.T, p *TemplatePresenterSpy) {
 
 	assert.DeepEqual(t, errors, p.ValidationErrors)
 	assert.False(t, p.PresentHTMLCalled)
-}
-
-const invalidJSON = `INVALID JSON`
-const emptyJSON = `{}`
-
-const validTemplateJSON = `
-{
-	"type": "Page",
-	"children": [
-		{
-			"type": "Section",
-			"children": [
-				{
-					"type": "Text",
-					"properties": {
-						"content": "<p>Text</p>"
-					}
-				}
-			]
-		}
-	]
-}
-`
-
-var validTemplateComponent = &Component{
-	Type: "Page",
-	Children: []*Component{
-		&Component{
-			Type: "Section",
-			Children: []*Component{
-				&Component{
-					Type: "Text",
-					Properties: Properties{
-						"content": "<p>Text</p>",
-					},
-				},
-			},
-		},
-	},
 }
 
 const renderedHTML = `

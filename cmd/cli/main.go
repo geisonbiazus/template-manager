@@ -1,21 +1,23 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"github.com/geisonbiazus/templatemanager"
 )
 
 func main() {
-	content, _ := ioutil.ReadAll(os.Stdin)
+	template := &templatemanager.Component{}
+	json.NewDecoder(os.Stdin).Decode(template)
+
 	presenter := NewFilePresenter(os.Stdout)
 
 	renderer := templatemanager.NewTemplateRenderer("test/templates/*")
 	interactor := templatemanager.NewRenderTemplateInteractor(renderer)
-	interactor.RenderByJSON(string(content), presenter)
+	interactor.RenderByJSON(template, presenter)
 }
 
 type FilePresenter struct {
