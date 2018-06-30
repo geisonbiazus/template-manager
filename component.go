@@ -17,7 +17,7 @@ const (
 )
 
 type ValidationError struct {
-	Field   string
-	Type    string
-	Message string
+	Field   string `json:"field"`
+	Type    string `json:"type"`
+	Message string `json:"message"`
 }
