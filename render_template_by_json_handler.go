@@ -10,17 +10,17 @@ type RenderTemplateOutputBoundaryFactory interface {
 }
 
 type RenderTemplateByJSONHandler struct {
-	Interactor       RenderTemplateInputBoundary
-	PresenterFactory RenderTemplateOutputBoundaryFactory
+	Input         RenderTemplateInputBoundary
+	OutputFactory RenderTemplateOutputBoundaryFactory
 }
 
 func NewRenderTemplateByJSONHandler(
 	interactor RenderTemplateInputBoundary,
-	presenterFactory RenderTemplateOutputBoundaryFactory,
+	outputFactory RenderTemplateOutputBoundaryFactory,
 ) *RenderTemplateByJSONHandler {
 	return &RenderTemplateByJSONHandler{
-		Interactor:       interactor,
-		PresenterFactory: presenterFactory,
+		Input:         interactor,
+		OutputFactory: outputFactory,
 	}
 }
 
@@ -28,7 +28,7 @@ func (h *RenderTemplateByJSONHandler) ServeHTTP(w http.ResponseWriter, r *http.R
 	req := renderTemplateByJSONRequest{}
 	json.NewDecoder(r.Body).Decode(&req)
 
-	h.Interactor.RenderByJSON(req.Template, h.PresenterFactory.Create(w))
+	h.Input.RenderByJSON(req.Template, h.OutputFactory.Create(w))
 }
 
 type renderTemplateByJSONRequest struct {

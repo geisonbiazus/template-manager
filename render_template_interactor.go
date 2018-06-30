@@ -11,8 +11,7 @@ var invalidTemplateJSONValidationError = ValidationError{
 }
 
 type RenderTemplateInteractor struct {
-	Presenter RenderTemplateOutputBoundary
-	Renderer  Renderer
+	Renderer Renderer
 }
 
 func NewRenderTemplateInteractor(renderer Renderer) *RenderTemplateInteractor {
@@ -22,12 +21,12 @@ func NewRenderTemplateInteractor(renderer Renderer) *RenderTemplateInteractor {
 }
 
 func (r *RenderTemplateInteractor) RenderByJSON(
-	template *Component, presenter RenderTemplateOutputBoundary,
+	template *Component, output RenderTemplateOutputBoundary,
 ) {
 	if template == nil || template.Empty() {
-		presenter.PresentValidationErrors([]ValidationError{invalidTemplateJSONValidationError})
+		output.PresentValidationErrors([]ValidationError{invalidTemplateJSONValidationError})
 		return
 	}
 
-	presenter.PresentHTML(r.Renderer.Render(template))
+	output.PresentHTML(r.Renderer.Render(template))
 }

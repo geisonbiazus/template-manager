@@ -10,18 +10,18 @@ func TestRenderTemplateInteractor(t *testing.T) {
 	type fixture struct {
 		renderer   *RendererSpy
 		interactor *RenderTemplateInteractor
-		presenter  *RenderTemplateOutputBoundarySpy
+		output     *RenderTemplateOutputBoundarySpy
 	}
 
 	setup := func() *fixture {
 		renderer := NewRendererSpy()
 		interactor := NewRenderTemplateInteractor(renderer)
-		presenter := NewRenderTemplateOutputBoundarySpy()
+		output := NewRenderTemplateOutputBoundarySpy()
 
 		return &fixture{
 			renderer:   renderer,
 			interactor: interactor,
-			presenter:  presenter,
+			output:     output,
 		}
 	}
 
@@ -32,22 +32,22 @@ func TestRenderTemplateInteractor(t *testing.T) {
 
 			template := &Component{Type: "Page"}
 
-			f.interactor.RenderByJSON(template, f.presenter)
+			f.interactor.RenderByJSON(template, f.output)
 
 			assert.DeepEqual(t, template, f.renderer.Component)
-			assert.Equal(t, renderedHTML, f.presenter.HTML)
+			assert.Equal(t, renderedHTML, f.output.HTML)
 		})
 
 		t.Run("Present a validation error with nil template", func(t *testing.T) {
 			f := setup()
-			f.interactor.RenderByJSON(nil, f.presenter)
-			assertInvalidJSONResonse(t, f.presenter)
+			f.interactor.RenderByJSON(nil, f.output)
+			assertInvalidJSONResonse(t, f.output)
 		})
 
 		t.Run("Present a validation error with empty template", func(t *testing.T) {
 			f := setup()
-			f.interactor.RenderByJSON(&Component{}, f.presenter)
-			assertInvalidJSONResonse(t, f.presenter)
+			f.interactor.RenderByJSON(&Component{}, f.output)
+			assertInvalidJSONResonse(t, f.output)
 		})
 	})
 }

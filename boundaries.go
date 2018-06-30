@@ -6,5 +6,5 @@ type RenderTemplateOutputBoundary interface {
 }
 
 type RenderTemplateInputBoundary interface {
-	RenderByJSON(template *Component, presenter RenderTemplateOutputBoundary)
+	RenderByJSON(template *Component, output RenderTemplateOutputBoundary)
 }
