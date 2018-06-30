@@ -5,7 +5,7 @@ type Renderer interface {
 }
 
 var invalidTemplateJSONValidationError = ValidationError{
-	Field:   "template_json",
+	Field:   "template",
 	Type:    ErrorInvalid,
 	Message: "The given template JSON is invalid",
 }

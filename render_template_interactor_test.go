@@ -56,7 +56,7 @@ func assertInvalidJSONResonse(t *testing.T, p *RenderTemplateOutputBoundarySpy) 
 	t.Helper()
 	errors := []ValidationError{
 		ValidationError{
-			Field:   "template_json",
+			Field:   "template",
 			Type:    ErrorInvalid,
 			Message: "The given template JSON is invalid",
 		},

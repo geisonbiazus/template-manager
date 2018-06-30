@@ -15,11 +15,11 @@ type RenderTemplateByJSONHandler struct {
 }
 
 func NewRenderTemplateByJSONHandler(
-	interactor RenderTemplateInputBoundary,
+	input RenderTemplateInputBoundary,
 	outputFactory RenderTemplateOutputBoundaryFactory,
 ) *RenderTemplateByJSONHandler {
 	return &RenderTemplateByJSONHandler{
-		Input:         interactor,
+		Input:         input,
 		OutputFactory: outputFactory,
 	}
 }
