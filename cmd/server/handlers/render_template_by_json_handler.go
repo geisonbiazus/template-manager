@@ -1,21 +1,23 @@
-package templatemanager
+package handlers
 
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/geisonbiazus/templatemanager"
 )
 
 type RenderTemplateOutputBoundaryFactory interface {
-	Create(w http.ResponseWriter) RenderTemplateOutputBoundary
+	Create(w http.ResponseWriter) templatemanager.RenderTemplateOutputBoundary
 }
 
 type RenderTemplateByJSONHandler struct {
-	Input         RenderTemplateInputBoundary
+	Input         templatemanager.RenderTemplateInputBoundary
 	OutputFactory RenderTemplateOutputBoundaryFactory
 }
 
 func NewRenderTemplateByJSONHandler(
-	input RenderTemplateInputBoundary,
+	input templatemanager.RenderTemplateInputBoundary,
 	outputFactory RenderTemplateOutputBoundaryFactory,
 ) *RenderTemplateByJSONHandler {
 	return &RenderTemplateByJSONHandler{
@@ -32,5 +34,5 @@ func (h *RenderTemplateByJSONHandler) ServeHTTP(w http.ResponseWriter, r *http.R
 }
 
 type renderTemplateByJSONRequest struct {
-	Template *Component `json:"template"`
+	Template *templatemanager.Component `json:"template"`
 }

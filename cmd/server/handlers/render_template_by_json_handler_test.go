@@ -1,4 +1,4 @@
-package templatemanager
+package handlers
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/geisonbiazus/templatemanager"
 	"github.com/geisonbiazus/templatemanager/assert"
 )
 
@@ -43,15 +44,15 @@ func TestRenderTemplateByJSONHandler(t *testing.T) {
 
 		f.handler.ServeHTTP(f.recorder, r)
 
-		assert.DeepEqual(t, &Component{Type: "Page"}, f.input.Template)
+		assert.DeepEqual(t, &templatemanager.Component{Type: "Page"}, f.input.Template)
 		assert.Equal(t, f.output, f.input.Output)
 		assert.Equal(t, f.outputFactory.ResponseWriter, f.recorder)
 	})
 }
 
 type RenderTemplateInputBoundarySpy struct {
-	Template *Component
-	Output   RenderTemplateOutputBoundary
+	Template *templatemanager.Component
+	Output   templatemanager.RenderTemplateOutputBoundary
 }
 
 func NewRenderTemplateInputBoundarySpy() *RenderTemplateInputBoundarySpy {
@@ -59,7 +60,7 @@ func NewRenderTemplateInputBoundarySpy() *RenderTemplateInputBoundarySpy {
 }
 
 func (r *RenderTemplateInputBoundarySpy) RenderByJSON(
-	template *Component, output RenderTemplateOutputBoundary,
+	template *templatemanager.Component, output templatemanager.RenderTemplateOutputBoundary,
 ) {
 	r.Template = template
 	r.Output = output
@@ -74,11 +75,25 @@ func NewRenderTemplateOutputBoundaryFactorySpy() *RenderTemplateOutputBoundaryFa
 	return &RenderTemplateOutputBoundaryFactorySpy{}
 }
 
-func (f *RenderTemplateOutputBoundaryFactorySpy) Create(w http.ResponseWriter) RenderTemplateOutputBoundary {
+func (f *RenderTemplateOutputBoundaryFactorySpy) Create(w http.ResponseWriter) templatemanager.RenderTemplateOutputBoundary {
 	f.ResponseWriter = w
 	return f.Output
 }
 
 func (f *RenderTemplateOutputBoundaryFactorySpy) Configure(output *RenderTemplateOutputBoundarySpy) {
 	f.Output = output
+}
+
+type RenderTemplateOutputBoundarySpy struct {
+	PresentHTMLCalled bool
+	HTML              string
+	ValidationErrors  []templatemanager.ValidationError
+}
+
+func NewRenderTemplateOutputBoundarySpy() *RenderTemplateOutputBoundarySpy {
+	return &RenderTemplateOutputBoundarySpy{}
+}
+
+func (p *RenderTemplateOutputBoundarySpy) PresentHTML(html string) {}
+func (p *RenderTemplateOutputBoundarySpy) PresentValidationErrors(ee []templatemanager.ValidationError) {
 }

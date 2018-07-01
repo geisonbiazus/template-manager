@@ -29,8 +29,8 @@ func (p *RenderTemplateJSONPresenter) PresentValidationErrors(errors []Validatio
 }
 
 func (p *RenderTemplateJSONPresenter) renderJSON(status int, body interface{}) {
-	p.Writer.WriteHeader(status)
 	p.Writer.Header().Set("Content-Type", "application/json")
+	p.Writer.WriteHeader(status)
 	json.NewEncoder(p.Writer).Encode(body)
 }
 

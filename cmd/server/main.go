@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/geisonbiazus/templatemanager"
+	"github.com/geisonbiazus/templatemanager/cmd/server/handlers"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 	renderTemplateInteractor := templatemanager.NewRenderTemplateInteractor(templateRenderer)
 	renderTemplateJSONPresenterFactory := templatemanager.NewRenderTemplateJSONPresenterFactory()
 
-	renderTemplateByJSONHandler := templatemanager.NewRenderTemplateByJSONHandler(
+	renderTemplateByJSONHandler := handlers.NewRenderTemplateByJSONHandler(
 		renderTemplateInteractor, renderTemplateJSONPresenterFactory,
 	)
 
