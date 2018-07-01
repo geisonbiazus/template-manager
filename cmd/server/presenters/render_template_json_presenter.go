@@ -1,8 +1,10 @@
-package templatemanager
+package presenters
 
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/geisonbiazus/templatemanager"
 )
 
 type RenderTemplateJSONPresenter struct {
@@ -19,9 +21,9 @@ func (p *RenderTemplateJSONPresenter) PresentHTML(html string) {
 	p.renderJSON(http.StatusOK, result)
 }
 
-func (p *RenderTemplateJSONPresenter) PresentValidationErrors(errors []ValidationError) {
+func (p *RenderTemplateJSONPresenter) PresentValidationErrors(errors []templatemanager.ValidationError) {
 	result := struct {
-		Errors []ValidationError `json:"errors"`
+		Errors []templatemanager.ValidationError `json:"errors"`
 	}{
 		Errors: errors,
 	}
@@ -42,6 +44,6 @@ func NewRenderTemplateJSONPresenterFactory() *RenderTemplateJSONPresenterFactory
 
 func (f *RenderTemplateJSONPresenterFactory) Create(
 	w http.ResponseWriter,
-) RenderTemplateOutputBoundary {
+) templatemanager.RenderTemplateOutputBoundary {
 	return &RenderTemplateJSONPresenter{Writer: w}
 }

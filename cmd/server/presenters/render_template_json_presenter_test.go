@@ -1,10 +1,11 @@
-package templatemanager
+package presenters
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/geisonbiazus/templatemanager"
 	"github.com/geisonbiazus/templatemanager/assert"
 )
 
@@ -41,8 +42,8 @@ func TestRenderTemplateJSONPresenter(t *testing.T) {
 	t.Run("PresentValidationErrors", func(t *testing.T) {
 		t.Run("Presents the errors as json", func(t *testing.T) {
 			f := setup()
-			errors := []ValidationError{
-				ValidationError{
+			errors := []templatemanager.ValidationError{
+				templatemanager.ValidationError{
 					Field:   "field",
 					Message: "message",
 					Type:    "type",
