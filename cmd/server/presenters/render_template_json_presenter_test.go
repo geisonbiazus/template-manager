@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/geisonbiazus/templatemanager"
 	"github.com/geisonbiazus/templatemanager/assert"
+	"github.com/geisonbiazus/templatemanager/pkg/templatemanager"
 )
 
 func TestRenderTemplateJSONPresenter(t *testing.T) {

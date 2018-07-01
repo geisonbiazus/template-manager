@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/geisonbiazus/templatemanager"
+	"github.com/geisonbiazus/templatemanager/pkg/templatemanager"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 
 	presenter := NewFilePresenter(os.Stdout)
 
-	renderer := templatemanager.NewTemplateRenderer("test/templates/*")
+	renderer := templatemanager.NewTemplateRenderer("pkg/templatemanager/test/templates/*")
 	interactor := templatemanager.NewRenderTemplateInteractor(renderer)
 	interactor.RenderByJSON(template, presenter)
 }

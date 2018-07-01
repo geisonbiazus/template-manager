@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/geisonbiazus/templatemanager"
+	"github.com/geisonbiazus/templatemanager/pkg/templatemanager"
 )
 
 type RenderTemplateOutputBoundaryFactory interface {
