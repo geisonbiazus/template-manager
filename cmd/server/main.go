@@ -3,23 +3,11 @@ package main
 import (
 	"net/http"
 
-	"github.com/geisonbiazus/templatemanager/cmd/server/handlers"
-	"github.com/geisonbiazus/templatemanager/cmd/server/presenters"
+	"github.com/geisonbiazus/templatemanager/cmd/server/app"
 	"github.com/geisonbiazus/templatemanager/pkg/templatemanager"
 )
 
 func main() {
-	mux := http.NewServeMux()
-
-	templateRenderer := templatemanager.NewTemplateRenderer("pkg/templatemanager/test/templates/*")
-	renderTemplateInteractor := templatemanager.NewRenderTemplateInteractor(templateRenderer)
-	renderTemplateJSONPresenterFactory := presenters.NewRenderTemplateJSONPresenterFactory()
-
-	renderTemplateByJSONHandler := handlers.NewRenderTemplateByJSONHandler(
-		renderTemplateInteractor, renderTemplateJSONPresenterFactory,
-	)
-
-	mux.Handle("/render_by_json", renderTemplateByJSONHandler)
-
+	mux := app.Mux(templatemanager.DefaultTemplatePath)
 	http.ListenAndServe(":3001", mux)
 }

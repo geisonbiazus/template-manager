@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/geisonbiazus/templatemanager/cmd/server/presenters"
 	"github.com/geisonbiazus/templatemanager/pkg/support/assert"
 	"github.com/geisonbiazus/templatemanager/pkg/templatemanager"
 )
@@ -49,24 +48,6 @@ func TestRenderTemplateByJSONHandler(t *testing.T) {
 		assert.Equal(t, f.output, f.input.Output)
 		assert.Equal(t, f.outputFactory.ResponseWriter, f.recorder)
 	})
-}
-
-func TestRenderTemplateByJSONIntegration(t *testing.T) {
-	renderer := templatemanager.NewTemplateRenderer("../../../" + templatemanager.DefaultTemplatePath)
-	input := templatemanager.NewRenderTemplateInteractor(renderer)
-	outputFactory := presenters.NewRenderTemplateJSONPresenterFactory()
-	handler := NewRenderTemplateByJSONHandler(input, outputFactory)
-
-	body := bytes.NewBufferString(`{"template": {"type":"Page"}}`)
-	r := httptest.NewRequest(http.MethodPost, "http://example.org", body)
-	w := httptest.NewRecorder()
-
-	handler.ServeHTTP(w, r)
-
-	expected := `{"html":"\u003c!DOCTYPE html\u003e\n\u003chtml\u003e\n\u003chead\u003e\n\u003cmeta charset=\"UTF-8\"\u003e\n\u003ctitle\u003e\u003c/title\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n  \n\u003c/body\u003e\n\u003c/html\u003e\n"}` + "\n"
-	response := w.Body.String()
-	assert.Equal(t, expected, response)
-	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 type RenderTemplateInputBoundarySpy struct {
