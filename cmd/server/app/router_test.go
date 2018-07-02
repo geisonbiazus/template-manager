@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/geisonbiazus/addrvrf/assert"
-	"github.com/geisonbiazus/templatemanager/pkg/templatemanager"
+	"github.com/geisonbiazus/templatemanager/internal/templatemanager"
 )
 
 func TestMux(t *testing.T) {

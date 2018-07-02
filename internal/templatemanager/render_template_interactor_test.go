@@ -3,7 +3,7 @@ package templatemanager
 import (
 	"testing"
 
-	"github.com/geisonbiazus/templatemanager/pkg/support/assert"
+	"github.com/geisonbiazus/templatemanager/internal/support/assert"
 )
 
 func TestRenderTemplateInteractor(t *testing.T) {

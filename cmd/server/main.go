@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/geisonbiazus/templatemanager/cmd/server/app"
-	"github.com/geisonbiazus/templatemanager/pkg/templatemanager"
+	"github.com/geisonbiazus/templatemanager/internal/templatemanager"
 )
 
 func main() {

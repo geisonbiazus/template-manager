@@ -5,7 +5,7 @@ import (
 
 	"github.com/geisonbiazus/templatemanager/cmd/server/handlers"
 	"github.com/geisonbiazus/templatemanager/cmd/server/presenters"
-	"github.com/geisonbiazus/templatemanager/pkg/templatemanager"
+	"github.com/geisonbiazus/templatemanager/internal/templatemanager"
 )
 
 func Mux(templatePath string) http.Handler {

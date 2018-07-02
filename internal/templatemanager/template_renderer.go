@@ -6,7 +6,7 @@ import (
 	"text/template"
 )
 
-const DefaultTemplatePath = "pkg/templatemanager/test/templates/*"
+const DefaultTemplatePath = "internal/templatemanager/test/templates/*"
 
 type TemplateRenderer struct {
 	tmpl *template.Template
