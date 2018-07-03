@@ -30,9 +30,11 @@ func (h *RenderTemplateByJSONHandler) ServeHTTP(w http.ResponseWriter, r *http.R
 	req := renderTemplateByJSONRequest{}
 	json.NewDecoder(r.Body).Decode(&req)
 
-	h.Input.RenderByJSON(req.Template, h.OutputFactory.Create(w))
+	h.Input.RenderByJSON(req.Template.Body, h.OutputFactory.Create(w))
 }
 
 type renderTemplateByJSONRequest struct {
-	Template *templatemanager.Component `json:"template"`
+	Template struct {
+		Body *templatemanager.Component `json:"body"`
+	} `json:"template"`
 }

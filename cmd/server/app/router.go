@@ -19,7 +19,7 @@ func Mux(templatePath string) http.Handler {
 		renderTemplateInteractor, renderTemplateJSONPresenterFactory,
 	)
 
-	mux.Handle("/render_by_json", renderTemplateByJSONHandler)
+	mux.Handle("/v1/templates/render", renderTemplateByJSONHandler)
 
 	return mux
 }

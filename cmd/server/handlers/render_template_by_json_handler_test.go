@@ -36,7 +36,7 @@ func TestRenderTemplateByJSONHandler(t *testing.T) {
 		}
 	}
 
-	const validRequestBody = `{"template": {"type":"Page"}}`
+	const validRequestBody = `{"template": {"body": {"type":"Page"}}}`
 
 	t.Run("template JSON goes through input", func(t *testing.T) {
 		f := setup()
