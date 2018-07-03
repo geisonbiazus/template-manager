@@ -84,11 +84,7 @@ func (f *RenderTemplateOutputBoundaryFactorySpy) Configure(output *RenderTemplat
 	f.Output = output
 }
 
-type RenderTemplateOutputBoundarySpy struct {
-	PresentHTMLCalled bool
-	HTML              string
-	ValidationErrors  []templatemanager.ValidationError
-}
+type RenderTemplateOutputBoundarySpy struct{}
 
 func NewRenderTemplateOutputBoundarySpy() *RenderTemplateOutputBoundarySpy {
 	return &RenderTemplateOutputBoundarySpy{}

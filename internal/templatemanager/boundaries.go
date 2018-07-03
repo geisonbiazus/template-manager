@@ -8,3 +8,12 @@ type RenderTemplateOutputBoundary interface {
 type RenderTemplateInputBoundary interface {
 	RenderByJSON(template *Component, output RenderTemplateOutputBoundary)
 }
+
+type ManageTemplateInputBoundary interface {
+	Create(template Template, output ManageTemplateOutputBoundary)
+}
+
+type ManageTemplateOutputBoundary interface {
+	PresentCreated(template Template)
+	PresentValidationErrors([]ValidationError)
+}
