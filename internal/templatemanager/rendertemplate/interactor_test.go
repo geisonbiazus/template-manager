@@ -28,10 +28,10 @@ func TestInteractor(t *testing.T) {
 			f := setup()
 			f.renderer.Configure(renderedHTML)
 
-			req := RenderByJSONRequest{Template: validComponent}
+			req := RenderByJSONRequest{Template: Template{Body: validComponent}}
 			resp := f.interactor.RenderByJSON(req)
 
-			assert.Equal(t, req.Template, f.renderer.Component)
+			assert.Equal(t, req.Template.Body, f.renderer.Component)
 			expectedResp := RenderByJSONResponse{Status: StatusSuccess, HTML: renderedHTML}
 			assert.DeepEqual(t, expectedResp, resp)
 		})
@@ -39,14 +39,14 @@ func TestInteractor(t *testing.T) {
 		t.Run("Return a validation error with nil template", func(t *testing.T) {
 			f := setup()
 
-			req := RenderByJSONRequest{Template: nil}
+			req := RenderByJSONRequest{Template: Template{Body: nil}}
 			resp := f.interactor.RenderByJSON(req)
 			asserInvalidBodyResponse(t, resp)
 		})
 
 		t.Run("Return a validation error with empty template", func(t *testing.T) {
 			f := setup()
-			req := RenderByJSONRequest{Template: &templatemanager.Component{}}
+			req := RenderByJSONRequest{Template: Template{Body: &templatemanager.Component{}}}
 			resp := f.interactor.RenderByJSON(req)
 			asserInvalidBodyResponse(t, resp)
 		})
@@ -59,7 +59,7 @@ func asserInvalidBodyResponse(t *testing.T, resp RenderByJSONResponse) {
 		Status: StatusInvalid,
 		Errors: []templatemanager.ValidationError{
 			templatemanager.ValidationError{
-				Field:   "body",
+				Field:   "template.body",
 				Type:    templatemanager.ErrorInvalid,
 				Message: "The given template JSON is invalid",
 			},

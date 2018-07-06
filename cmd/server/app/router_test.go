@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/geisonbiazus/addrvrf/assert"
+	"github.com/geisonbiazus/templatemanager/internal/support/assert"
 	"github.com/geisonbiazus/templatemanager/internal/templatemanager"
 )
 
