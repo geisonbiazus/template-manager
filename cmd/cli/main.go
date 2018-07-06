@@ -3,39 +3,25 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/geisonbiazus/templatemanager/internal/templatemanager"
+	"github.com/geisonbiazus/templatemanager/internal/templatemanager/rendertemplate"
 )
 
 func main() {
 	template := &templatemanager.Component{}
 	json.NewDecoder(os.Stdin).Decode(template)
 
-	presenter := NewFilePresenter(os.Stdout)
-
 	renderer := templatemanager.NewTemplateRenderer("internal/templatemanager/test/templates/*")
-	interactor := templatemanager.NewRenderTemplateInteractor(renderer)
-	interactor.RenderByJSON(template, presenter)
-}
+	interactor := rendertemplate.NewInteractor(renderer)
+	resp := interactor.RenderByJSON(rendertemplate.RenderByJSONRequest{Template: template})
 
-type FilePresenter struct {
-	Writer io.Writer
-}
-
-func NewFilePresenter(w io.Writer) *FilePresenter {
-	return &FilePresenter{
-		Writer: w,
-	}
-}
-
-func (p *FilePresenter) PresentHTML(html string) {
-	fmt.Fprintln(p.Writer, html)
-}
-
-func (p *FilePresenter) PresentValidationErrors(errors []templatemanager.ValidationError) {
-	for _, error := range errors {
-		fmt.Fprintln(p.Writer, error.Message)
+	if resp.Status == rendertemplate.StatusSuccess {
+		fmt.Fprintln(os.Stdout, resp.HTML)
+	} else if resp.Status == rendertemplate.StatusInvalid {
+		for _, error := range resp.Errors {
+			fmt.Fprintln(os.Stdout, error.Message)
+		}
 	}
 }
