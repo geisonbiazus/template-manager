@@ -9,7 +9,7 @@ import (
 )
 
 type RenderTemplateInteractor interface {
-	RenderByJSON(rendertemplate.RenderByJSONInput) rendertemplate.RenderByJSONOutput
+	RenderByJSON(rendertemplate.RenderByJSONInput) rendertemplate.Output
 }
 
 type RenderByJSONHandler struct {
@@ -44,7 +44,7 @@ func (h *RenderByJSONHandler) createInteractorInput(
 }
 
 func (h *RenderByJSONHandler) writeResponse(
-	w http.ResponseWriter, output rendertemplate.RenderByJSONOutput,
+	w http.ResponseWriter, output rendertemplate.Output,
 ) {
 	if output.Status == rendertemplate.StatusSuccess {
 		h.writeSuccessResponse(w, output)
@@ -54,7 +54,7 @@ func (h *RenderByJSONHandler) writeResponse(
 }
 
 func (h *RenderByJSONHandler) writeSuccessResponse(
-	w http.ResponseWriter, output rendertemplate.RenderByJSONOutput,
+	w http.ResponseWriter, output rendertemplate.Output,
 ) {
 	body := struct {
 		HTML string `json:"html"`
@@ -66,7 +66,7 @@ func (h *RenderByJSONHandler) writeSuccessResponse(
 }
 
 func (h *RenderByJSONHandler) writeInvalidResponse(
-	w http.ResponseWriter, output rendertemplate.RenderByJSONOutput,
+	w http.ResponseWriter, output rendertemplate.Output,
 ) {
 	body := struct {
 		Errors []templatemanager.ValidationError `json:"errors"`

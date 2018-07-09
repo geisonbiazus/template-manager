@@ -84,8 +84,8 @@ func assertRenderByJSONInvalidResponse(
 }
 
 type RenderTemplateInteractorSpy struct {
-	RenderByJSONInput  rendertemplate.RenderByJSONInput
-	RenderByJSONOutput rendertemplate.RenderByJSONOutput
+	RenderByJSONInput rendertemplate.RenderByJSONInput
+	Output            rendertemplate.Output
 }
 
 func NewRenderTemplateInteractorSpy() *RenderTemplateInteractorSpy {
@@ -94,20 +94,20 @@ func NewRenderTemplateInteractorSpy() *RenderTemplateInteractorSpy {
 
 func (i *RenderTemplateInteractorSpy) RenderByJSON(
 	input rendertemplate.RenderByJSONInput,
-) rendertemplate.RenderByJSONOutput {
+) rendertemplate.Output {
 	i.RenderByJSONInput = input
-	return i.RenderByJSONOutput
+	return i.Output
 }
 
 func (i *RenderTemplateInteractorSpy) ConfigureRenderByJSONSuccessOutput(html string) {
-	i.RenderByJSONOutput = rendertemplate.RenderByJSONOutput{
+	i.Output = rendertemplate.Output{
 		Status: rendertemplate.StatusSuccess,
 		HTML:   html,
 	}
 }
 
 func (i *RenderTemplateInteractorSpy) ConfigureRenderByJSONInvalidOutput() {
-	i.RenderByJSONOutput = rendertemplate.RenderByJSONOutput{
+	i.Output = rendertemplate.Output{
 		Status: rendertemplate.StatusInvalid,
 		Errors: []templatemanager.ValidationError{
 			templatemanager.ValidationError{

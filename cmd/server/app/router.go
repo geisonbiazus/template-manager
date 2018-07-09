@@ -11,8 +11,9 @@ import (
 func Mux(templatePath string) http.Handler {
 	mux := http.NewServeMux()
 
+	templateRepository := templatemanager.NewInMemoryTemplateRepository()
 	templateRenderer := templatemanager.NewTemplateRenderer(templatePath)
-	renderTemplateInteractor := rendertemplate.NewInteractor(templateRenderer)
+	renderTemplateInteractor := rendertemplate.NewInteractor(templateRenderer, templateRepository)
 	renderByJSONHandler := template.NewRenderByJSONHandler(renderTemplateInteractor)
 
 	mux.Handle("/v1/templates/render", renderByJSONHandler)

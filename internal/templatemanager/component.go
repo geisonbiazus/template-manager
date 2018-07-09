@@ -1,7 +1,8 @@
 package templatemanager
 
 type Template struct {
-	Body *Component `json:"body"`
+	ID        string
+	Component *Component
 }
 
 type Properties map[string]string
