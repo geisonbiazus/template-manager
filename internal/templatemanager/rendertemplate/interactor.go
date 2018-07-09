@@ -1,6 +1,8 @@
 package rendertemplate
 
-import "github.com/geisonbiazus/templatemanager/internal/templatemanager"
+import (
+	"github.com/geisonbiazus/templatemanager/internal/templatemanager"
+)
 
 const (
 	StatusSuccess = "Success"
