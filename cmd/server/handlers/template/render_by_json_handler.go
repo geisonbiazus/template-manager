@@ -29,12 +29,6 @@ func (h *RenderByJSONHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	h.writeResponse(w, output)
 }
 
-type renderByJSONBody struct {
-	Template struct {
-		Body *templatemanager.Component `json:"body"`
-	} `json:"template"`
-}
-
 func (h *RenderByJSONHandler) decodeRequestBody(r *http.Request) renderByJSONBody {
 	body := renderByJSONBody{}
 	json.NewDecoder(r.Body).Decode(&body)
@@ -81,4 +75,10 @@ func (h *RenderByJSONHandler) writeInvalidResponse(
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusUnprocessableEntity)
 	json.NewEncoder(w).Encode(body)
+}
+
+type renderByJSONBody struct {
+	Template struct {
+		Body *templatemanager.Component `json:"body"`
+	} `json:"template"`
 }
