@@ -3,23 +3,19 @@ package app
 import (
 	"net/http"
 
-	"github.com/geisonbiazus/templatemanager/cmd/server/handler"
-	"github.com/geisonbiazus/templatemanager/cmd/server/presenters"
+	"github.com/geisonbiazus/templatemanager/cmd/server/handlers/template"
 	"github.com/geisonbiazus/templatemanager/internal/templatemanager"
+	"github.com/geisonbiazus/templatemanager/internal/templatemanager/rendertemplate"
 )
 
 func Mux(templatePath string) http.Handler {
 	mux := http.NewServeMux()
 
 	templateRenderer := templatemanager.NewTemplateRenderer(templatePath)
-	renderTemplateInteractor := templatemanager.NewRenderTemplateInteractor(templateRenderer)
-	renderTemplateJSONPresenterFactory := presenters.NewRenderTemplateJSONPresenterFactory()
+	renderTemplateInteractor := rendertemplate.NewInteractor(templateRenderer)
+	renderByJSONHandler := template.NewRenderByJSONHandler(renderTemplateInteractor)
 
-	renderTemplateByJSONHandler := handlers.NewRenderTemplateByJSONHandler(
-		renderTemplateInteractor, renderTemplateJSONPresenterFactory,
-	)
-
-	mux.Handle("/v1/templates/render", renderTemplateByJSONHandler)
+	mux.Handle("/v1/templates/render", renderByJSONHandler)
 
 	return mux
 }

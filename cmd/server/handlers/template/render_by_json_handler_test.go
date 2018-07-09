@@ -40,6 +40,17 @@ func TestRenderByJSONHandler(t *testing.T) {
 
 		assertRenderByJSONSuccessResponse(t, f.interactor, f.writer)
 	})
+
+	t.Run("Validation error on rendering", func(t *testing.T) {
+		f := setup()
+
+		r := newRequest(`{"template": {"body": null}}`)
+		f.interactor.ConfigureRenderByJSONInvalidOutput()
+
+		f.handler.ServeHTTP(f.writer, r)
+
+		assertRenderByJSONInvalidResponse(t, f.interactor, f.writer)
+	})
 }
 
 func newRequest(body string) *http.Request {
@@ -63,6 +74,15 @@ func assertRenderByJSONSuccessResponse(
 	assert.Equal(t, "application/json", w.Header().Get("Content-Type"))
 }
 
+func assertRenderByJSONInvalidResponse(
+	t *testing.T, i *RenderTemplateInteractorSpy, w *httptest.ResponseRecorder,
+) {
+	expected := `{"errors":[{"field":"FIELD","type":"TYPE","message":"MESSAGE"}]}` + "\n"
+	assert.Equal(t, expected, w.Body.String())
+	assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
+	assert.Equal(t, "application/json", w.Header().Get("Content-Type"))
+}
+
 type RenderTemplateInteractorSpy struct {
 	RenderByJSONInput  rendertemplate.RenderByJSONInput
 	RenderByJSONOutput rendertemplate.RenderByJSONOutput
@@ -83,5 +103,18 @@ func (i *RenderTemplateInteractorSpy) ConfigureRenderByJSONSuccessOutput(html st
 	i.RenderByJSONOutput = rendertemplate.RenderByJSONOutput{
 		Status: rendertemplate.StatusSuccess,
 		HTML:   html,
+	}
+}
+
+func (i *RenderTemplateInteractorSpy) ConfigureRenderByJSONInvalidOutput() {
+	i.RenderByJSONOutput = rendertemplate.RenderByJSONOutput{
+		Status: rendertemplate.StatusInvalid,
+		Errors: []templatemanager.ValidationError{
+			templatemanager.ValidationError{
+				Type:    "TYPE",
+				Field:   "FIELD",
+				Message: "MESSAGE",
+			},
+		},
 	}
 }

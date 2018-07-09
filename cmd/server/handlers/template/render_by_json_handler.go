@@ -26,7 +26,7 @@ func (h *RenderByJSONHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	body := h.decodeRequestBody(r)
 	input := h.createInteractorInput(body)
 	output := h.Interactor.RenderByJSON(input)
-	h.writeSuccessResponse(w, output)
+	h.writeResponse(w, output)
 }
 
 type renderByJSONBody struct {
@@ -49,6 +49,16 @@ func (h *RenderByJSONHandler) createInteractorInput(
 	}
 }
 
+func (h *RenderByJSONHandler) writeResponse(
+	w http.ResponseWriter, output rendertemplate.RenderByJSONOutput,
+) {
+	if output.Status == rendertemplate.StatusSuccess {
+		h.writeSuccessResponse(w, output)
+	} else {
+		h.writeInvalidResponse(w, output)
+	}
+}
+
 func (h *RenderByJSONHandler) writeSuccessResponse(
 	w http.ResponseWriter, output rendertemplate.RenderByJSONOutput,
 ) {
@@ -58,5 +68,17 @@ func (h *RenderByJSONHandler) writeSuccessResponse(
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(body)
+}
+
+func (h *RenderByJSONHandler) writeInvalidResponse(
+	w http.ResponseWriter, output rendertemplate.RenderByJSONOutput,
+) {
+	body := struct {
+		Errors []templatemanager.ValidationError `json:"errors"`
+	}{Errors: output.Errors}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusUnprocessableEntity)
 	json.NewEncoder(w).Encode(body)
 }
