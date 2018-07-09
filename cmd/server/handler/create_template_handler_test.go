@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/geisonbiazus/templatemanager/cmd/server/handlers"
+	. "github.com/geisonbiazus/templatemanager/cmd/server/handler"
 	"github.com/geisonbiazus/templatemanager/internal/support/assert"
 	"github.com/geisonbiazus/templatemanager/internal/templatemanager"
 )

@@ -3,7 +3,7 @@ package app
 import (
 	"net/http"
 
-	"github.com/geisonbiazus/templatemanager/cmd/server/handlers"
+	"github.com/geisonbiazus/templatemanager/cmd/server/handler"
 	"github.com/geisonbiazus/templatemanager/cmd/server/presenters"
 	"github.com/geisonbiazus/templatemanager/internal/templatemanager"
 )

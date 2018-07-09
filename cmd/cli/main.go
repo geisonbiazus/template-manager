@@ -15,7 +15,9 @@ func main() {
 
 	renderer := templatemanager.NewTemplateRenderer("internal/templatemanager/test/templates/*")
 	interactor := rendertemplate.NewInteractor(renderer)
-	resp := interactor.RenderByJSON(rendertemplate.RenderByJSONRequest{Template: template})
+	resp := interactor.RenderByJSON(
+		rendertemplate.RenderByJSONRequest{rendertemplate.Template{Body: template}},
+	)
 
 	if resp.Status == rendertemplate.StatusSuccess {
 		fmt.Fprintln(os.Stdout, resp.HTML)
