@@ -31,6 +31,14 @@ func TestMux(t *testing.T) {
 		assertResponse(t, res, http.StatusOK, expected)
 	})
 
+	t.Run("GET /templates/:id/render", func(t *testing.T) {
+		t.SkipNow()
+		f := setup()
+		res := doGet(f.server, "/v1/templates/1/render")
+		expected := `{"html":"\u003c!DOCTYPE html\u003e\n\u003chtml\u003e\n\u003chead\u003e\n\u003cmeta charset=\"UTF-8\"\u003e\n\u003ctitle\u003e\u003c/title\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n  \n\u003c/body\u003e\n\u003c/html\u003e\n"}` + "\n"
+		assertResponse(t, res, http.StatusOK, expected)
+	})
+
 	t.Run("POST /templates", func(t *testing.T) {
 		t.SkipNow()
 		f := setup()
@@ -38,6 +46,11 @@ func TestMux(t *testing.T) {
 		expected := `{"template": {"id": "1", "body": {"type":"Page"}}}` + "\n"
 		assertResponse(t, res, http.StatusCreated, expected)
 	})
+}
+
+func doGet(s *httptest.Server, path string) *http.Response {
+	res, _ := http.Get(s.URL + path)
+	return res
 }
 
 func doPost(s *httptest.Server, path, body string) *http.Response {
