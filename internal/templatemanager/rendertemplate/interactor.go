@@ -13,15 +13,11 @@ type Renderer interface {
 	Render(*templatemanager.Component) string
 }
 
-type Template struct {
-	Body *templatemanager.Component
+type RenderByJSONInput struct {
+	Template *templatemanager.Component
 }
 
-type RenderByJSONRequest struct {
-	Template Template
-}
-
-type RenderByJSONResponse struct {
+type RenderByJSONOutput struct {
 	Status string
 	HTML   string
 	Errors []templatemanager.ValidationError
@@ -37,20 +33,20 @@ func NewInteractor(renderer Renderer) *Interactor {
 	}
 }
 
-func (i *Interactor) RenderByJSON(r RenderByJSONRequest) RenderByJSONResponse {
-	if r.Template.Body == nil || r.Template.Body.Empty() {
-		return invalidTemplateBodyResponse
+func (i *Interactor) RenderByJSON(r RenderByJSONInput) RenderByJSONOutput {
+	if r.Template == nil || r.Template.Empty() {
+		return invalidTemplateBodyOutput
 	}
 
-	html := i.Renderer.Render(r.Template.Body)
-	return RenderByJSONResponse{Status: StatusSuccess, HTML: html}
+	html := i.Renderer.Render(r.Template)
+	return RenderByJSONOutput{Status: StatusSuccess, HTML: html}
 }
 
-var invalidTemplateBodyResponse = RenderByJSONResponse{
+var invalidTemplateBodyOutput = RenderByJSONOutput{
 	Status: StatusInvalid,
 	Errors: []templatemanager.ValidationError{
 		templatemanager.ValidationError{
-			Field:   "template.body",
+			Field:   "template",
 			Type:    templatemanager.ErrorInvalid,
 			Message: "The given template JSON is invalid",
 		},

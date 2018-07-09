@@ -28,45 +28,45 @@ func TestInteractor(t *testing.T) {
 			f := setup()
 			f.renderer.Configure(renderedHTML)
 
-			req := RenderByJSONRequest{Template: Template{Body: validComponent}}
-			resp := f.interactor.RenderByJSON(req)
+			input := RenderByJSONInput{Template: validComponent}
+			output := f.interactor.RenderByJSON(input)
 
-			assert.Equal(t, req.Template.Body, f.renderer.Component)
-			expectedResp := RenderByJSONResponse{Status: StatusSuccess, HTML: renderedHTML}
-			assert.DeepEqual(t, expectedResp, resp)
+			assert.Equal(t, input.Template, f.renderer.Component)
+			expectedResp := RenderByJSONOutput{Status: StatusSuccess, HTML: renderedHTML}
+			assert.DeepEqual(t, expectedResp, output)
 		})
 
 		t.Run("Return a validation error with nil template", func(t *testing.T) {
 			f := setup()
 
-			req := RenderByJSONRequest{Template: Template{Body: nil}}
-			resp := f.interactor.RenderByJSON(req)
-			asserInvalidBodyResponse(t, resp)
+			input := RenderByJSONInput{Template: nil}
+			output := f.interactor.RenderByJSON(input)
+			asserInvalidBodyResponse(t, output)
 		})
 
 		t.Run("Return a validation error with empty template", func(t *testing.T) {
 			f := setup()
-			req := RenderByJSONRequest{Template: Template{Body: &templatemanager.Component{}}}
-			resp := f.interactor.RenderByJSON(req)
-			asserInvalidBodyResponse(t, resp)
+			input := RenderByJSONInput{Template: &templatemanager.Component{}}
+			output := f.interactor.RenderByJSON(input)
+			asserInvalidBodyResponse(t, output)
 		})
 	})
 }
 
-func asserInvalidBodyResponse(t *testing.T, resp RenderByJSONResponse) {
+func asserInvalidBodyResponse(t *testing.T, output RenderByJSONOutput) {
 	t.Helper()
-	expected := RenderByJSONResponse{
+	expected := RenderByJSONOutput{
 		Status: StatusInvalid,
 		Errors: []templatemanager.ValidationError{
 			templatemanager.ValidationError{
-				Field:   "template.body",
+				Field:   "template",
 				Type:    templatemanager.ErrorInvalid,
 				Message: "The given template JSON is invalid",
 			},
 		},
 	}
 
-	assert.DeepEqual(t, expected, resp)
+	assert.DeepEqual(t, expected, output)
 }
 
 var validComponent = &templatemanager.Component{Type: "Page"}

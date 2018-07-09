@@ -34,7 +34,7 @@ func TestRenderByJSONHandler(t *testing.T) {
 		f := setup()
 
 		r := newRequest(`{"template": {"body": {"type":"Page"}}}`)
-		f.interactor.ConfigureRenderByJSONSuccessResponse("rendered html")
+		f.interactor.ConfigureRenderByJSONSuccessOutput("rendered html")
 
 		f.handler.ServeHTTP(f.writer, r)
 
@@ -51,13 +51,11 @@ func newRequest(body string) *http.Request {
 func assertRenderByJSONSuccessResponse(
 	t *testing.T, i *RenderTemplateInteractorSpy, w *httptest.ResponseRecorder,
 ) {
-	expectedReq := rendertemplate.RenderByJSONRequest{
-		Template: rendertemplate.Template{
-			Body: &templatemanager.Component{Type: "Page"},
-		},
+	expectedInput := rendertemplate.RenderByJSONInput{
+		Template: &templatemanager.Component{Type: "Page"},
 	}
 
-	assert.DeepEqual(t, expectedReq, i.Request)
+	assert.DeepEqual(t, expectedInput, i.RenderByJSONInput)
 
 	expected := `{"html":"rendered html"}` + "\n"
 	assert.Equal(t, expected, w.Body.String())
@@ -66,8 +64,8 @@ func assertRenderByJSONSuccessResponse(
 }
 
 type RenderTemplateInteractorSpy struct {
-	Request  rendertemplate.RenderByJSONRequest
-	Response rendertemplate.RenderByJSONResponse
+	RenderByJSONInput  rendertemplate.RenderByJSONInput
+	RenderByJSONOutput rendertemplate.RenderByJSONOutput
 }
 
 func NewRenderTemplateInteractorSpy() *RenderTemplateInteractorSpy {
@@ -75,14 +73,14 @@ func NewRenderTemplateInteractorSpy() *RenderTemplateInteractorSpy {
 }
 
 func (i *RenderTemplateInteractorSpy) RenderByJSON(
-	r rendertemplate.RenderByJSONRequest,
-) rendertemplate.RenderByJSONResponse {
-	i.Request = r
-	return i.Response
+	input rendertemplate.RenderByJSONInput,
+) rendertemplate.RenderByJSONOutput {
+	i.RenderByJSONInput = input
+	return i.RenderByJSONOutput
 }
 
-func (i *RenderTemplateInteractorSpy) ConfigureRenderByJSONSuccessResponse(html string) {
-	i.Response = rendertemplate.RenderByJSONResponse{
+func (i *RenderTemplateInteractorSpy) ConfigureRenderByJSONSuccessOutput(html string) {
+	i.RenderByJSONOutput = rendertemplate.RenderByJSONOutput{
 		Status: rendertemplate.StatusSuccess,
 		HTML:   html,
 	}

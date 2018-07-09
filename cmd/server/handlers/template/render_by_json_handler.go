@@ -9,7 +9,7 @@ import (
 )
 
 type RenderTemplateInteractor interface {
-	RenderByJSON(rendertemplate.RenderByJSONRequest) rendertemplate.RenderByJSONResponse
+	RenderByJSON(rendertemplate.RenderByJSONInput) rendertemplate.RenderByJSONOutput
 }
 
 type RenderByJSONHandler struct {
@@ -24,9 +24,9 @@ func NewRenderByJSONHandler(interactor RenderTemplateInteractor) *RenderByJSONHa
 
 func (h *RenderByJSONHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	body := h.decodeRequestBody(r)
-	req := h.createInteractorRequest(body)
-	resp := h.Interactor.RenderByJSON(req)
-	h.writeSuccessResponse(w, resp)
+	input := h.createInteractorInput(body)
+	output := h.Interactor.RenderByJSON(input)
+	h.writeSuccessResponse(w, output)
 }
 
 type renderByJSONBody struct {
@@ -41,24 +41,22 @@ func (h *RenderByJSONHandler) decodeRequestBody(r *http.Request) renderByJSONBod
 	return body
 }
 
-func (h *RenderByJSONHandler) createInteractorRequest(
+func (h *RenderByJSONHandler) createInteractorInput(
 	b renderByJSONBody,
-) rendertemplate.RenderByJSONRequest {
-	return rendertemplate.RenderByJSONRequest{
-		Template: rendertemplate.Template{
-			Body: b.Template.Body,
-		},
+) rendertemplate.RenderByJSONInput {
+	return rendertemplate.RenderByJSONInput{
+		Template: b.Template.Body,
 	}
 }
 
 func (h *RenderByJSONHandler) writeSuccessResponse(
-	w http.ResponseWriter, resp rendertemplate.RenderByJSONResponse,
+	w http.ResponseWriter, output rendertemplate.RenderByJSONOutput,
 ) {
-	response := struct {
+	body := struct {
 		HTML string `json:"html"`
-	}{HTML: resp.HTML}
+	}{HTML: output.HTML}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(body)
 }
