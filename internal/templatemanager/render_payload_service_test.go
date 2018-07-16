@@ -6,27 +6,60 @@ import (
 	"github.com/geisonbiazus/templatemanager/internal/support/assert"
 )
 
+type RenderPayloadFixture struct {
+	renderer  *RendererSpy
+	presenter *ContentPresenterSpy
+}
+
 func TestRenderPayloadInteractor(t *testing.T) {
+	setup := func() *RenderPayloadFixture {
+		return &RenderPayloadFixture{
+			renderer:  NewRendererSpy(),
+			presenter: NewContentPresenterSpy(),
+		}
+	}
+
 	t.Run("It renders a payload and presents it", func(t *testing.T) {
-		component := &Component{Type: "Page"}
+		f := setup()
 
-		renderer := NewRendererSpy()
-		presenter := NewContentPresenterSpy()
-		interactor := NewRenderPayloadService(component, renderer, presenter)
-
+		payload := &Component{Type: "Page"}
 		expectedContent := "RenderedContent"
-		renderer.Content = expectedContent
+		f.renderer.Content = expectedContent
 
-		interactor.Execute()
+		service := NewRenderPayloadService(payload, f.renderer, f.presenter)
 
-		assert.DeepEqual(t, component, renderer.Component)
-		assert.Equal(t, expectedContent, presenter.Content)
+		service.Execute()
+
+		assert.DeepEqual(t, payload, f.renderer.Component)
+		assert.Equal(t, expectedContent, f.presenter.Content)
+	})
+
+	t.Run("It validates empty component", func(t *testing.T) {
+		f := setup()
+
+		payload := &Component{}
+		service := NewRenderPayloadService(payload, f.renderer, f.presenter)
+		service.Execute()
+
+		assert.False(t, f.renderer.RenderCalled)
+		assert.DeepEqual(t, invalidPayloadErrors, f.presenter.ValidationErrors)
+	})
+
+	t.Run("It validates nil component", func(t *testing.T) {
+		f := setup()
+
+		service := NewRenderPayloadService(nil, f.renderer, f.presenter)
+		service.Execute()
+
+		assert.False(t, f.renderer.RenderCalled)
+		assert.DeepEqual(t, invalidPayloadErrors, f.presenter.ValidationErrors)
 	})
 }
 
 type RendererSpy struct {
-	Component *Component
-	Content   string
+	Component    *Component
+	Content      string
+	RenderCalled bool
 }
 
 func NewRendererSpy() *RendererSpy {
@@ -34,12 +67,14 @@ func NewRendererSpy() *RendererSpy {
 }
 
 func (r *RendererSpy) Render(c *Component) string {
+	r.RenderCalled = true
 	r.Component = c
 	return r.Content
 }
 
 type ContentPresenterSpy struct {
-	Content string
+	Content          string
+	ValidationErrors []ValidationError
 }
 
 func NewContentPresenterSpy() *ContentPresenterSpy {
@@ -48,4 +83,8 @@ func NewContentPresenterSpy() *ContentPresenterSpy {
 
 func (p *ContentPresenterSpy) PresentContent(content string) {
 	p.Content = content
+}
+
+func (p *ContentPresenterSpy) PresentValidationErrors(errs []ValidationError) {
+	p.ValidationErrors = errs
 }
